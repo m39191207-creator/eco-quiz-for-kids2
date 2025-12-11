@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эко-викторина для малышей: Угадай картинку!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.97);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(46, 125, 50, 0.25);
+            overflow: hidden;
+            border: 12px solid #81c784;
+            padding: 25px;
+            position: relative;
+        }
+        
+        header {
+            text-align: center;
+            padding: 25px 20px;
+            background: linear-gradient(to right, #43a047, #2e7d32);
+            border-radius: 25px;
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 #1b5e20;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f1f8e9;
+            border-radius: 20px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .score-container {
+            display: flex;
+            gap: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .correct-score {
+            color: #43a047;
+        }
+        
+        .wrong-score {
+            color: #e53935;
+        }
+        
+        .question-counter {
+            font-size: 1.4rem;
+            color: #388e3c;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 3px solid #a5d6a7;
+        }
+        
+        .question-container {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9fbe7;
+            border-radius: 25px;
+            border: 5px dashed #c5e1a5;
+        }
+        
+        .question-text {
+            font-size: 1.9rem;
+            color: #2e7d32;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            padding: 15px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .question-text i {
+            color: #ff9800;
+            margin-right: 10px;
+        }
+        
+        .answers-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        
+        .answer-option {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 5px solid #c8e6c9;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .answer-option:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+        }
+        
+        .answer-option.correct {
+            border-color: #4caf50;
+            box-shadow: 0 0 25px rgba(76, 175, 80, 0.4);
+            animation: pulse 0.5s;
+        }
+        
+        .answer-option.wrong {
+            border-color: #f44336;
+            box-shadow: 0 0 25px rgba(244, 67, 54, 0.3);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .answer-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+            background: #f5f5f5;
+        }
+        
+        .answer-label {
+            padding: 15px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2e7d32;
+            background: #e8f5e9;
+            text-align: center;
+        }
+        
+        .feedback-container {
+            min-height: 120px;
+            padding: 20px;
+            background: #e3f2fd;
+            border-radius: 20px;
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.8rem;
+            color: #1565c0;
+            border: 4px solid #bbdefb;
+            transition: all 0.5s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .feedback-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .feedback-correct {
+            background: #e8f5e9;
+            border-color: #c8e6c9;
+            color: #2e7d32;
+        }
+        
+        .feedback-wrong {
+            background: #ffebee;
+            border-color: #ffcdd2;
+            color: #c62828;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 18px 35px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.1);
+        }
+        
+        .control-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+        }
+        
+        .next-btn {
+            background: linear-gradient(to right, #4caf50, #2e7d32);
+            color: white;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(to right, #ff9800, #f57c00);
+            color: white;
+        }
+        
+        .sound-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 100;
+            transition: all 0.3s;
+        }
+        
+        .sound-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .eco-tip {
+            background: #fff3e0;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 8px solid #ffb74d;
+            font-size: 1.3rem;
+            color: #ef6c00;
+        }
+        
+        .eco-tip i {
+            color: #ff9800;
+            margin-right: 10px;
+        }
+        
+        .final-screen {
+            text-align: center;
+            padding: 40px 20px;
+            display: none;
+        }
+        
+        .trophy-icon {
+            font-size: 120px;
+            color: gold;
+            margin: 20px 0;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .result-text {
+            font-size: 2.5rem;
+            color: #2e7d32;
+            margin: 20px 0;
+        }
+        
+        .result-stats {
+            font-size: 1.8rem;
+            margin: 25px 0;
+            color: #555;
+        }
+        
+        .stars {
+            font-size: 50px;
+            color: #ffd700;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                border-width: 8px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .answers-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .question-text {
+                font-size: 1.6rem;
+            }
+            
+            .answer-image {
+                height: 140px;
+            }
+            
+            .control-btn {
+                padding: 15px 25px;
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .answers-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .game-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        .image-source {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #777;
+            font-style: italic;
+        }
+        
+        .image-placeholder {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, #e0f7fa, #b2ebf2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            color: #00796b;
+        }
+        
+        @media (max-width: 768px) {
+            .image-placeholder {
+                height: 140px;
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-leaf"></i> Эко-викторина для малышей <i class="fas fa-tree"></i></h1>
+            <p class="subtitle">Выбери правильную картинку и помоги природе!</p>
+        </header>
+        
+        <div class="game-info">
+            <div class="score-container">
+                <div class="correct-score">
+                    <i class="fas fa-check-circle"></i> Правильно: <span id="correct-count">0</span>
+                </div>
+                <div class="wrong-score">
+                    <i class="fas fa-times-circle"></i> Ошибки: <span id="wrong-count">0</span>
+                </div>
+            </div>
+            <div class="question-counter">
+                Вопрос <span id="current-question">1</span> из <span id="total-questions">8</span>
+            </div>
+        </div>
+        
+        <!-- Вопросы викторины -->
+        <div id="question-1" class="question-container active-question">
+            <div class="question-text">
+                <i class="fas fa-question-circle"></i> Что нужно делать с пластиковой бутылкой, чтобы помочь природе?
+            </div>
+            
+            <div class="answers-container">
+                <div class="answer-option" data-correct="true" data-question="1">
+                    <div class="image-placeholder">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <div class="answer-label">Сдать на переработку</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="1">
+                    <div class="image-placeholder">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                    <div class="answer-label">Выбросить в лесу</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="1">
+                    <div class="image-placeholder">
+                        <i class="fas fa-shovel"></i>
+                    </div>
+                    <div class="answer-label">Зарыть в землю</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="1">
+                    <div class="image-placeholder">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <div class="answer-label">Выбросить в реку</div>
+                </div>
+            </div>
+            
+            <div class="feedback-container" id="feedback-1">
+                <div id="feedback-text-1"></div>
+            </div>
+        </div>
+        
+        <!-- Вопрос 2 -->
+        <div id="question-2" class="question-container" style="display: none;">
+            <div class="question-text">
+                <i class="fas fa-question-circle"></i> Как можно помочь птицам зимой?
+            </div>
+            
+            <div class="answers-container">
+                <div class="answer-option" data-correct="true" data-question="2">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #fff9c4, #fff59d);">
+                        <i class="fas fa-dove"></i>
+                    </div>
+                    <div class="answer-label">Сделать кормушку</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="2">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #ffccbc, #ffab91);">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="answer-label">Забрать птицу домой</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="2">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #e1bee7, #ce93d8);">
+                        <i class="fas fa-wine-bottle"></i>
+                    </div>
+                    <div class="answer-label">Дать пластиковую бутылку</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="2">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #ffe0b2, #ffcc80);">
+                        <i class="fas fa-solar-panel"></i>
+                    </div>
+                    <div class="answer-label">Поставить солнечные батареи</div>
+                </div>
+            </div>
+            
+            <div class="feedback-container" id="feedback-2">
+                <div id="feedback-text-2"></div>
+            </div>
+        </div>
+        
+        <!-- Вопрос 3 -->
+        <div id="question-3" class="question-container" style="display: none;">
+            <div class="question-text">
+                <i class="fas fa-question-circle"></i> Что нужно делать, когда видишь мусор в лесу?
+            </div>
+            
+            <div class="answers-container">
+                <div class="answer-option" data-correct="true" data-question="3">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #c8e6c9, #a5d6a7);">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <div class="answer-label">Убрать в пакет и выбросить</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="3">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #f5f5f5, #eeeeee);">
+                        <i class="fas fa-walking"></i>
+                    </div>
+                    <div class="answer-label">Пройти мимо</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="3">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #ffccbc, #ffab91);">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="answer-label">Поджечь</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="3">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #d7ccc8, #bcaaa4);">
+                        <i class="fas fa-eye-slash"></i>
+                    </div>
+                    <div class="answer-label">Спрятать под кустом</div>
+                </div>
+            </div>
+            
+            <div class="feedback-container" id="feedback-3">
+                <div id="feedback-text-3"></div>
+            </div>
+        </div>
+        
+        <!-- Вопрос 4 -->
+        <div id="question-4" class="question-container" style="display: none;">
+            <div class="question-text">
+                <i class="fas fa-question-circle"></i> Как правильно экономить воду дома?
+            </div>
+            
+            <div class="answers-container">
+                <div class="answer-option" data-correct="true" data-question="4">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #bbdefb, #90caf9);">
+                        <i class="fas fa-faucet"></i>
+                    </div>
+                    <div class="answer-label">Выключать воду, когда чистишь зубы</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="4">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #b3e5fc, #81d4fa);">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="answer-label">Оставлять кран открытым</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="4">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #e1f5fe, #b3e5fc);">
+                        <i class="fas fa-shower"></i>
+                    </div>
+                    <div class="answer-label">Принимать душ 30 минут</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="4">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #b2ebf2, #80deea);">
+                        <i class="fas fa-bath"></i>
+                    </div>
+                    <div class="answer-label">Наполнять ванну до краёв</div>
+                </div>
+            </div>
+            
+            <div class="feedback-container" id="feedback-4">
+                <div id="feedback-text-4"></div>
+            </div>
+        </div>
+        
+        <!-- Вопрос 5 -->
+        <div id="question-5" class="question-container" style="display: none;">
+            <div class="question-text">
+                <i class="fas fa-question-circle"></i> Что полезно для здоровья нашей планеты?
+            </div>
+            
+            <div class="answers-container">
+                <div class="answer-option" data-correct="true" data-question="5">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #c8e6c9, #a5d6a7);">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <div class="answer-label">Сажать деревья</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="5">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #bdbdbd, #9e9e9e);">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <div class="answer-label">Выпускать много дыма из труб</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="5">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #d7ccc8, #bcaaa4);">
+                        <i class="fas fa-tree"></i>
+                    </div>
+                    <div class="answer-label">Вырубать лес</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="5">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #80deea, #4dd0e1);">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <div class="answer-label">Сливать грязную воду в реку</div>
+                </div>
+            </div>
+            
+            <div class="feedback-container" id="feedback-5">
+                <div id="feedback-text-5"></div>
+            </div>
+        </div>
+        
+        <!-- Вопрос 6 -->
+        <div id="question-6" class="question-container" style="display: none;">
+            <div class="question-text">
+                <i class="fas fa-question-circle"></i> Какой транспорт самый экологичный?
+            </div>
+            
+            <div class="answers-container">
+                <div class="answer-option" data-correct="true" data-question="6">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #fff9c4, #fff59d);">
+                        <i class="fas fa-bicycle"></i>
+                    </div>
+                    <div class="answer-label">Велосипед</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="6">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #e0e0e0, #bdbdbd);">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="answer-label">Большая машина на одного</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="6">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #bbdefb, #90caf9);">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <div class="answer-label">Самолёт</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="6">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #d7ccc8, #bcaaa4);">
+                        <i class="fas fa-motorcycle"></i>
+                    </div>
+                    <div class="answer-label">Мотоцикл</div>
+                </div>
+            </div>
+            
+            <div class="feedback-container" id="feedback-6">
+                <div id="feedback-text-6"></div>
+            </div>
+        </div>
+        
+        <!-- Вопрос 7 -->
+        <div id="question-7" class="question-container" style="display: none;">
+            <div class="question-text">
+                <i class="fas fa-question-circle"></i> Что можно сделать из старых газет?
+            </div>
+            
+            <div class="answers-container">
+                <div class="answer-option" data-correct="true" data-question="7">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #fff9c4, #fff59d);">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <div class="answer-label">Сделать поделки или сдать на переработку</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="7">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #c8e6c9, #a5d6a7);">
+                        <i class="fas fa-tree"></i>
+                    </div>
+                    <div class="answer-label">Выбросить в лесу</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="7">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #ffccbc, #ffab91);">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="answer-label">Сжечь во дворе</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="7">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #bbdefb, #90caf9);">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <div class="answer-label">Выбросить в реку</div>
+                </div>
+            </div>
+            
+            <div class="feedback-container" id="feedback-7">
+                <div id="feedback-text-7"></div>
+            </div>
+        </div>
+        
+        <!-- Вопрос 8 - ИСПРАВЛЕННЫЙ -->
+        <div id="question-8" class="question-container" style="display: none;">
+            <div class="question-text">
+                <i class="fas fa-question-circle"></i> Как помочь бабочкам и пчёлам в саду?
+            </div>
+            
+            <div class="answers-container">
+                <div class="answer-option" data-correct="true" data-question="8">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #f3e5f5, #e1bee7);">
+                        <i class="fas fa-flower"></i>
+                    </div>
+                    <div class="answer-label">Посадить цветы</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="8">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #d7ccc8, #bcaaa4);">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="answer-label">Забрать насекомых домой</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="8">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #ffccbc, #ffab91);">
+                        <i class="fas fa-cut"></i>
+                    </div>
+                    <div class="answer-label">Вырубить все цветы</div>
+                </div>
+                
+                <div class="answer-option" data-correct="false" data-question="8">
+                    <div class="image-placeholder" style="background: linear-gradient(45deg, #c8e6c9, #a5d6a7); color: #d32f2f;">
+                        <i class="fas fa-spray-can"></i>
+                    </div>
+                    <div class="answer-label">Обработать химикатами</div>
+                </div>
+            </div>
+            
+            <div class="feedback-container" id="feedback-8">
+                <div id="feedback-text-8"></div>
+            </div>
+        </div>
+        
+        <!-- Экологическая подсказка -->
+        <div class="eco-tip" id="eco-tip">
+            <i class="fas fa-lightbulb"></i> <span id="tip-text">Пластик разлагается 400 лет! Всегда сдавай его на переработку.</span>
+        </div>
+        
+        <!-- Элементы управления -->
+        <div class="controls">
+            <button class="control-btn next-btn" id="next-btn">
+                <i class="fas fa-arrow-right"></i> Следующий вопрос
+            </button>
+            <button class="control-btn restart-btn" id="restart-btn">
+                <i class="fas fa-redo"></i> Начать сначала
+            </button>
+        </div>
+        
+        <!-- Финальный экран -->
+        <div class="final-screen" id="final-screen">
+            <div class="trophy-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="result-text">Поздравляем! Викторина завершена!</div>
+            <div class="result-stats">
+                Правильных ответов: <span id="final-correct">0</span> из 8
+            </div>
+            <div class="stars" id="stars-container">
+                <!-- Звёзды появятся здесь -->
+            </div>
+            <div class="eco-tip" style="max-width: 600px; margin: 30px auto;">
+                <i class="fas fa-award"></i> Ты - настоящий защитник природы! Продолжай заботиться о нашей планете!
+            </div>
+            <button class="control-btn restart-btn" onclick="restartQuiz()" style="margin-top: 20px;">
+                <i class="fas fa-redo"></i> Пройти викторину ещё раз
+            </button>
+        </div>
+        
+        <div class="image-source">
+            Для конкурса замените иконки на фотографии детей и их рисунки!
+        </div>
+    </div>
+    
+    <button class="sound-btn" id="sound-toggle">
+        <i class="fas fa-volume-up" id="sound-icon"></i>
+    </button>
+
+    <script>
+        // Игровые переменные
+        let currentQuestion = 1;
+        let totalQuestions = 8;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let soundEnabled = true;
+        let answered = false;
+        
+        // Тексты обратной связи для правильных и неправильных ответов
+        const correctFeedback = [
+            "Верно! Ты молодец!",
+            "Правильно! Так держать!",
+            "Отлично! Ты знаешь, как помочь природе!",
+            "Умница! Ты сделал правильный выбор!",
+            "Супер! Ты настоящий эко-герой!",
+            "Великолепно! Так и нужно поступать!",
+            "Браво! Ты заботишься о нашей планете!",
+            "Превосходно! Ты думаешь об экологии!"
+        ];
+        
+        const wrongFeedback = [
+            "Попробуй ещё раз!",
+            "Это не самый лучший выбор для природы.",
+            "Давай подумаем вместе!",
+            "Есть вариант лучше для нашей планеты.",
+            "Природа была бы недовольна таким выбором.",
+            "Давай выберем то, что поможет Земле!",
+            "Помни, мы должны заботиться о природе!",
+            "Есть более экологичный вариант!"
+        ];
+        
+        // Экологические подсказки для каждого вопроса
+        const ecoTips = [
+            "Пластик разлагается 400 лет! Всегда сдавай его на переработку.",
+            "Зимой птицам трудно найти корм. Кормушка спасёт им жизнь!",
+            "Мусор в лесу вредит животным и растениям. Всегда забирай его с собой!",
+            "Один открытый кран тратит до 15 литров воды в минуту!",
+            "Деревья дают нам кислород и дом для животных. Сажай больше деревьев!",
+            "Велосипед не загрязняет воздух и полезен для здоровья!",
+            "Бумагу можно переработать до 7 раз! Не выбрасывай её просто так.",
+            "Пчёлы опыляют растения, благодаря им у нас есть фрукты и овощи!"
+        ];
+        
+        // Инициализация игры
+        function initGame() {
+            updateScores();
+            updateQuestionCounter();
+            showQuestion(currentQuestion);
+            document.getElementById('tip-text').textContent = ecoTips[0];
+            
+            // Добавляем обработчики клика на варианты ответов
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.addEventListener('click', handleAnswerClick);
+            });
+            
+            // Обработчики для кнопок
+            document.getElementById('next-btn').addEventListener('click', nextQuestion);
+            document.getElementById('restart-btn').addEventListener('click', restartQuiz);
+            document.getElementById('sound-toggle').addEventListener('click', toggleSound);
+        }
+        
+        // Обработка клика по ответу
+        function handleAnswerClick(event) {
+            if (answered) return;
+            
+            const option = event.currentTarget;
+            const isCorrect = option.getAttribute('data-correct') === 'true';
+            const questionNum = parseInt(option.getAttribute('data-question'));
+            
+            // Помечаем выбранный ответ
+            option.classList.add(isCorrect ? 'correct' : 'wrong');
+            
+            // Если ответ правильный, показываем все правильные варианты (если их несколько)
+            if (isCorrect) {
+                document.querySelectorAll(`.answer-option[data-question="${questionNum}"][data-correct="true"]`)
+                    .forEach(correctOption => {
+                        correctOption.classList.add('correct');
+                    });
+            }
+            
+            // Обновляем счёт
+            if (isCorrect) {
+                correctAnswers++;
+                playSound('applause');
+                showFeedback(questionNum, correctFeedback[questionNum-1], true);
+            } else {
+                wrongAnswers++;
+                playSound('wrong');
+                showFeedback(questionNum, wrongFeedback[questionNum-1], false);
+                
+                // Показываем правильный ответ
+                document.querySelectorAll(`.answer-option[data-question="${questionNum}"][data-correct="true"]`)
+                    .forEach(correctOption => {
+                        correctOption.classList.add('correct');
+                    });
+            }
+            
+            updateScores();
+            answered = true;
+            
+            // Показываем кнопку "Следующий вопрос", если это не последний вопрос
+            if (currentQuestion < totalQuestions) {
+                document.getElementById('next-btn').style.display = 'flex';
+            } else {
+                // Если это последний вопрос, показываем кнопку завершения
+                document.getElementById('next-btn').innerHTML = '<i class="fas fa-flag-checkered"></i> Завершить викторину';
+                document.getElementById('next-btn').onclick = finishQuiz;
+            }
+        }
+        
+        // Показать обратную связь
+        function showFeedback(questionNum, text, isCorrect) {
+            const feedbackContainer = document.getElementById(`feedback-${questionNum}`);
+            const feedbackText = document.getElementById(`feedback-text-${questionNum}`);
+            
+            feedbackText.textContent = text;
+            feedbackContainer.className = `feedback-container show ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`;
+        }
+        
+        // Перейти к следующему вопросу
+        function nextQuestion() {
+            if (currentQuestion >= totalQuestions) {
+                finishQuiz();
+                return;
+            }
+            
+            // Скрываем текущий вопрос
+            document.getElementById(`question-${currentQuestion}`).style.display = 'none';
+            
+            // Показываем следующий вопрос
+            currentQuestion++;
+            showQuestion(currentQuestion);
+            
+            // Обновляем счётчик вопросов
+            updateQuestionCounter();
+            
+            // Обновляем экоподсказку
+            document.getElementById('tip-text').textContent = ecoTips[currentQuestion-1];
+            
+            // Скрываем кнопку "Следующий вопрос" до выбора ответа
+            document.getElementById('next-btn').style.display = 'none';
+            
+            // Сбрасываем флаг ответа
+            answered = false;
+        }
+        
+        // Показать вопрос
+        function showQuestion(questionNum) {
+            document.getElementById(`question-${questionNum}`).style.display = 'block';
+            
+            // Сбрасываем стили вариантов ответов
+            document.querySelectorAll(`.answer-option[data-question="${questionNum}"]`).forEach(option => {
+                option.classList.remove('correct', 'wrong');
+            });
+            
+            // Скрываем обратную связь
+            document.getElementById(`feedback-${questionNum}`).classList.remove('show');
+        }
+        
+        // Завершить викторину
+        function finishQuiz() {
+            // Скрываем последний вопрос
+            document.getElementById(`question-${currentQuestion}`).style.display = 'none';
+            
+            // Показываем финальный экран
+            document.getElementById('final-screen').style.display = 'block';
+            document.getElementById('eco-tip').style.display = 'none';
+            document.querySelector('.controls').style.display = 'none';
+            
+            // Обновляем финальные результаты
+            document.getElementById('final-correct').textContent = correctAnswers;
+            
+            // Показываем звёзды в зависимости от результата
+            const starsContainer = document.getElementById('stars-container');
+            starsContainer.innerHTML = '';
+            
+            let starsCount = Math.floor(correctAnswers / 2); // 0-4 звезды
+            if (correctAnswers === totalQuestions) starsCount = 5; // Максимум 5 звёзд за все правильные ответы
+            
+            for (let i = 0; i < starsCount; i++) {
+                starsContainer.innerHTML += '<i class="fas fa-star"></i>';
+            }
+            
+            // Проигрываем победную музыку
+            playSound('victory');
+        }
+        
+        // Начать викторину заново
+        function restartQuiz() {
+            currentQuestion = 1;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            answered = false;
+            
+            // Скрываем финальный экран
+            document.getElementById('final-screen').style.display = 'none';
+            document.getElementById('eco-tip').style.display = 'block';
+            document.querySelector('.controls').style.display = 'flex';
+            
+            // Сбрасываем все вопросы
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById(`question-${i}`).style.display = 'none';
+                
+                // Сбрасываем стили ответов
+                document.querySelectorAll(`.answer-option[data-question="${i}"]`).forEach(option => {
+                    option.classList.remove('correct', 'wrong');
+                });
+                
+                // Скрываем обратную связь
+                document.getElementById(`feedback-${i}`).classList.remove('show');
+            }
+            
+            // Показываем первый вопрос
+            showQuestion(1);
+            updateScores();
+            updateQuestionCounter();
+            document.getElementById('tip-text').textContent = ecoTips[0];
+            
+            // Сбрасываем кнопку "Следующий вопрос"
+            document.getElementById('next-btn').innerHTML = '<i class="fas fa-arrow-right"></i> Следующий вопрос';
+            document.getElementById('next-btn').onclick = nextQuestion;
+            document.getElementById('next-btn').style.display = 'none';
+        }
+        
+        // Обновить счёт
+        function updateScores() {
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('wrong-count').textContent = wrongAnswers;
+        }
+        
+        // Обновить счётчик вопросов
+        function updateQuestionCounter() {
+            document.getElementById('current-question').textContent = currentQuestion;
+            document.getElementById('total-questions').textContent = totalQuestions;
+        }
+        
+        // Воспроизведение звуков
+        function playSound(type) {
+            if (!soundEnabled) return;
+            
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            if (type === 'applause') {
+                // Звук аплодисментов
+                playApplauseSound(audioContext);
+            } else if (type === 'wrong') {
+                // Звук неправильного ответа
+                playWrongSound(audioContext);
+            } else if (type === 'victory') {
+                // Победная мелодия
+                playVictorySound(audioContext);
+            }
+        }
+        
+        function playApplauseSound(audioContext) {
+            // Имитация аплодисментов
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 800 + Math.random() * 800;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                }, i * 120);
+            }
+        }
+        
+        function playWrongSound(audioContext) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(250, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(180, audioContext.currentTime + 0.4);
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.4);
+        }
+        
+        function playVictorySound(audioContext) {
+            // Простая победная мелодия
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // До, Ми, Соль, До (октавой выше)
+            
+            notes.forEach((note, index) => {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = note;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.25);
+                }, index * 250);
+            });
+        }
+        
+        // Переключение звука
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            const button = document.getElementById('sound-toggle');
+            
+            if (soundEnabled) {
+                icon.className = 'fas fa-volume-up';
+                button.style.background = '#2196f3';
+            } else {
+                icon.className = 'fas fa-volume-mute';
+                button.style.background = '#9e9e9e';
+            }
+        }
+        
+        // Запуск игры при загрузке страницы
+        window.addEventListener('DOMContentLoaded', initGame);
+        
+        // Сообщение в консоль для воспитателей
+        console.log('🎮 Экологическая викторина загружена!');
+        console.log('Для участия в конкурсе:');
+        console.log('1. Замените иконки на реальные фото детей и их рисунки');
+        console.log('2. Используйте фото с экологических акций вашей группы');
+        console.log('3. Чтобы добавить фото, замените <div class="image-placeholder"> на <img src="ваше_фото.jpg" class="answer-image">');
+        console.log('4. Рекомендуемый размер фото: 500x300 пикселей');
+    </script>
+</body>
+</html>
